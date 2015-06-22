@@ -1,8 +1,138 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+#overlays {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 200;
 }
 
-a {
-  color: #00B7FF;
+#connecting {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 100;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+#connecting div {
+  width: 350px;
+  background-color: #fff;
+  margin: 100px auto;
+  border-radius: 15px;
+  padding: 5px 15px 5px 15px;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+#canvas {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+}
+
+label .checkbox {
+  margin-right: 10px;
+}
+
+form {
+  margin-bottom: 0px;
+}
+
+.btn-play, .btn-spectate, .btn-upload {
+  display: block;
+  height: 35px;
+}
+
+.btn-upload {
+  width: 49%;
+  float: left;
+}
+
+.btn-play {
+  width: 100%;
+}
+
+.btn-spectate {
+  width: 49%;
+  float: right;
+}
+
+#nick {
+  width: 65%;
+  float: left;
+}
+
+#gamemode {
+  width: 33%;
+  float: right;
+}
+
+.dialog {
+  width: 350px;
+  height: 80%;
+  overflow: hidden;
+  background-color: #FFFFFF;
+  border-radius: 15px;
+  padding: 5px 15px 5px 15px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: 10px -50% 10px auto;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.dialog .wrapper {
+  overflow-y: auto;
+  height: 100%;
+}
+
+#banner {
+  width: 300px;
+  height: 250px;
+}
+
+.form-group {
+  margin-bottom: 5px;
+}
+
+.dialog footer {
+  margin-bottom: 5px;
+  line-height: 32px;
+  margin-left: 6px;
+  height: 32px;
+}
+
+.btn-file {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-file input[type=file] {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 100%;
+  min-height: 100%;
+  font-size: 100px;
+  text-align: right;
+  filter: alpha(opacity=0);
+  opacity: 0;
+  outline: none;
+  background: white;
+  cursor: inherit;
+  display: block;
 }

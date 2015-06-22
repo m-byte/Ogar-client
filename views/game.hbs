@@ -1,0 +1,130 @@
+<div id='overlays'>
+  <div id='helloDialog' class='dialog'>
+    <div class='wrapper'>
+      <form>
+        <div class='form-group'>
+          <div style='float: left; margin-left: 20px;'><h2>{{title}}</h2></div>
+          <br clear='both'/>
+        </div>
+        <div class='form-group'>
+          <input id='nick' class='form-control' placeholder='Nick' maxlength='15'/>
+          <select id='gamemode' class='form-control' onchange='setGameMode($(this).val());' required>
+            {{#each modes}}
+              <option {{#if @first}}selected {{/if}}value='{{this.val}}'>{{this.name}}</option>
+            {{else}}
+              <option selected value=''>Default</option>
+            {{/each}}
+          </select>
+          <br clear='both'/>
+        </div>
+        <div class='form-group'>
+          <select id='region' class='form-control' onchange="setRegion($('#region').val());" required>
+            <option selected disabled value=''> -- Select a Region --</option>
+            {{#each regions}}
+              <option value='{{this.val}}'>{{this.name}}</option>
+            {{else}}
+              <option disabled value=''>No regions</option>
+            {{/each}}
+          </select>
+        </div>
+        <div class='form-group'>
+          <button disabled type='submit' id='playBtn' onclick='setNick(document.getElementById("nick").value); return false;' class='btn btn-play btn-primary btn-needs-server'>Play
+          </button>
+        </div>
+        <div class='form-group'>
+          <button onclick='spectate(); return false;' disabled class='btn btn-warning btn-spectate btn-needs-server'>
+            Spectate
+          </button>
+          <button onclick='dialogs.switch("upload"); return false;' class='btn btn-info btn-upload'>Upload Avatar</button>
+          <br clear='both'/>
+
+          <div style='margin: 6px;'>
+            <label><input type='checkbox' onchange='setSkins(!$(this).is(":checked"));'> No skins</label>
+            <label><input type='checkbox' onchange='setNames(!$(this).is(":checked"));'> No names</label>
+            <label><input type='checkbox' onchange='setDarkTheme($(this).is(":checked"));'> Dark Theme</label>
+            <label><input type='checkbox' onchange='setColors($(this).is(":checked"));'> No colors</label>
+            <label><input type='checkbox' onchange='setShowMass($(this).is(":checked"));'> Show mass</label>
+          </div>
+        </div>
+      </form>
+      <div id='instructions'>
+        <hr/>
+        <p class='text-muted text-center'>
+          Move your mouse to control your cell<br/>
+          Press <b>Space</b> to split<br/>
+          Press <b>W</b> to eject some mass<br/>
+        </p>
+      </div>
+      {{#if banner}}
+        <hr/>
+        <div id='banner'>
+          <img class='center-block' src='{{banner}}' width=300></img>
+        </div>
+      {{/if}}
+      {{#if links}}
+        {{#if banner}}
+          <hr style='margin-bottom: 7px; '/>
+        {{else}}
+          <hr/>
+        {{/if}}
+        <footer class='text-center'>
+          {{#each links}}
+            {{#unless @first}}|{{/unless}}
+            <a href='{{this.val}}' class='text-muted'>{{this.name}}</a>
+          {{/each}}
+        </footer>
+      {{/if}}
+    </div>
+  </div>
+  <div id='uploadDialog' class='dialog hidden'>
+    <div class='wrapper'>
+      <form enctype='multipart/form-data' action='upload' method='POST'>
+        <div class='form-group'>
+          <div style='float: left; margin-left: 20px;'><h2>Avatar Upload</h2></div>
+          <br clear='both'/>
+        </div>
+        <div id='instructions'>
+          <hr/>
+          <p class='text-muted text-center'>
+            Upload an image (.png) on this page<br/>
+            Use the name as your nickname<br/>
+            Conquer the server<br/>
+          </p>
+        </div>
+        <hr/>
+        <div class='form-group'>
+          <span class='btn btn-default btn-play btn-file'>
+            <span>Choose file</span>
+            <input type='file' name='avatar' id='avatar' accept='image/png' onchange='this.parentNode.getElementsByTagName("span")[0].innerText=this.value?this.value:"Choose file";'>
+          </span>
+        </div>
+        <div class='form-group'>
+          <input type='submit' value='Upload Avatar' name='submit' class='btn btn-primary btn-play'>
+        </div>
+      </form>
+      <hr />
+      <form>
+        <div class='form-group'>
+          <button onclick='dialogs.switch("hello");return false;' class='btn btn-warning btn-play'>Back</button>
+        </div>
+      </form>
+      {{#if links}}
+        <hr/>
+        <footer class='text-center'>
+          {{#each links}}
+            {{#unless @first}}|{{/unless}}
+            <a href='{{this.val}}' class='text-muted'>{{this.name}}</a>
+          {{/each}}
+        </footer>
+      {{/if}}
+    </div>
+  </div>
+</div>
+<div id='connecting' class='hidden'>
+  <div>
+    <h2>Connecting</h2>
+
+    <p> Apparently, you cannot connect to the server. This might be caused by a firewall or ad blocker.</p>
+  </div>
+</div>
+<canvas id='canvas' width='800' height='600'></canvas>
