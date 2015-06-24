@@ -124,7 +124,9 @@ if (typeof(socket) == 'undefined') socket = {};
   function updatePosition(msg, offset) {
     if (socket.onupdateposition) {
       var ret = {};
-      // TODO: parse msg and store result in ret
+      ret.x = msg.getFloat32(offset, true);
+      ret.y = msg.getFloat32(offset + 4, true);
+      ret.size = msg.getFloat32(offset + 8, true);
       socket.onupdateposition(ret);
     }
   }
@@ -132,7 +134,8 @@ if (typeof(socket) == 'undefined') socket = {};
   function drawLine(msg, offset) {
     if (socket.ondrawline) {
       var ret = {};
-      // TODO: parse msg and store result in ret
+      ret.x = msg.getInt16(offset, true);
+      ret.y = msg.getInt16(offset + 2, true);
       socket.ondrawline(ret);
     }
   }
@@ -140,15 +143,46 @@ if (typeof(socket) == 'undefined') socket = {};
   function addNode(msg, offset) {
     if (socket.onaddnode) {
       var ret = {};
-      // TODO: parse msg and store result in ret
+      ret.id = msg.getUint32(offset, true);
       socket.onaddnode(ret);
     }
   }
 
   function updateLB(msg, offset, type) {
+    function getString() {
+      var text = '',
+        char;
+      while ((char = msg.getUint16(offset, true)) != 0) {
+        offset += 2;
+        text += String.fromCharCode(char);
+      }
+      offset += 2;
+      return text;
+    }
+
     if (socket.onupdateleaderboard) {
       var ret = {};
-      // TODO: parse msg and store result in ret
+      ret.lb = [];
+      ret.count = msg.getUint32(offset, true);
+      offset += 4;
+      if (type == 50) {
+        ret.type = 'teams';
+        for (var i = 0; i < ret.count; i++) {
+          ret.lb.push(msg.getFloat32(offset, true));
+          offset += 4;
+        }
+      } else {
+        if (type == 48) {
+          ret.type = 'custom';
+        } else {
+          ret.type = 'ffa';
+        }
+        for (var i = 0; i < ret.count; i++) {
+          var nodeId = msg.getUint32(offset, true);
+          offset += 4;
+          ret.lb.push({id: nodeId, name: getString()});
+        }
+      }
       socket.onupdateleaderboard(ret);
     }
   }
@@ -156,7 +190,10 @@ if (typeof(socket) == 'undefined') socket = {};
   function setBorder(msg, offset) {
     if (socket.onsetborder) {
       var ret = {};
-      // TODO: parse msg and store result in ret
+      ret.left = msg.getFloat64(offset, true);
+      ret.top = msg.getFloat64(offset + 8, true);
+      ret.right = msg.getFloat64(offset + 16, true);
+      ret.bottom = msg.getFloat64(offset + 24, true);
       socket.onsetborder(ret);
     }
   }
