@@ -26,9 +26,9 @@ if (typeof(socket) == 'undefined') socket = {};
       }
       this.ws = null;
     }
-    if (this.secure && url.slice(0, 'ws://'.length) == 'ws://') {
+    if (!this.secure && url.slice(0, 'ws://'.length) != 'ws://') {
       url = 'ws://' + url;
-    } else if (!this.secure && url.slice(0, 'wss://'.length) == 'wss://') {
+    } else if (this.secure && url.slice(0, 'wss://'.length) != 'wss://') {
       url = 'wss://' + url;
     }
     if (this.onconnecting) {
@@ -152,7 +152,7 @@ if (typeof(socket) == 'undefined') socket = {};
         tmp.size = msg.getUint16(offset + 4, true);
         offset += 6;
         tmp.color = {};
-        tmp.color.r = msg.getUint8(offset);
+        tmp.color.request = msg.getUint8(offset);
         tmp.color.g = msg.getUint8(offset + 1);
         tmp.color.b = msg.getUint8(offset + 2);
         tmp.flags = msg.getUint8(offset + 3);

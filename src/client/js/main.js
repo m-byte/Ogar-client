@@ -2,6 +2,7 @@
 
 // import('config.js')
 // import('socket/main.js')
+// import('servers/main.js')
 
 window.onload = function () {
   function decodeQuery(query) {
