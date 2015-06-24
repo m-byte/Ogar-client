@@ -114,9 +114,70 @@ if (typeof(socket) == 'undefined') socket = {};
   }
 
   function updateNodes(msg, offset) {
+    function getString() {
+      var text = '',
+        char;
+      while ((char = msg.getUint16(offset, true)) != 0) {
+        offset += 2;
+        text += String.fromCharCode(char);
+      }
+      offset += 2;
+      return text;
+    }
+
     if (socket.onupdatenodes) {
-      var ret = {};
-      // TODO: parse msg and store result in ret
+      var ret = {},
+        queueLength = 0,
+        nodeid;
+      ret.timestamp = +new Date;
+      queueLength = msg.getUint16(offset, true);
+      offset += 2;
+      ret.kills = [];
+      for (var i = 0; i < queueLength; i++) {
+        var tmp = {};
+        tmp.killer = msg.getUint32(offset, true);
+        tmp.nodeId = msg.getUint32(offset + 4, true);
+        ret.kills.push(tmp);
+        offset += 8;
+      }
+      ret.updates = [];
+      while ((nodeid = msg.getUint32(offset, true)) != 0) {
+        offset += 4;
+        var tmp = {},
+          char;
+        tmp.nodeId = nodeid;
+        tmp.position = {};
+        tmp.position.x = msg.getUint16(offset, true);
+        tmp.position.y = msg.getUint16(offset + 2, true);
+        tmp.size = msg.getUint16(offset + 4, true);
+        offset += 6;
+        tmp.color = {};
+        tmp.color.r = msg.getUint8(offset);
+        tmp.color.g = msg.getUint8(offset + 1);
+        tmp.color.b = msg.getUint8(offset + 2);
+        tmp.flags = msg.getUint8(offset + 3);
+        offset += 4;
+        if (tmp.flags & 2) {
+          offset += 4;
+        }
+        if (tmp.flags & 4) {
+          offset += 8;
+        }
+        if (tmp.flags & 8) {
+          offset += 16;
+        }
+        tmp.isVirus = !!(tmp.flags & 1);
+        tmp.isAgitated = !!(tmp.flags & 16);
+        tmp.name = getString();
+        ret.updates.push(tmp);
+      }
+      queueLength = msg.getUint32(offset + 4, true);
+      offset += 8;
+      ret.remove = [];
+      for (var i = 0; i < queueLength; i++) {
+        ret.remove.push(msg.getUint32(offset, true));
+        offset += 4;
+      }
       socket.onupdatenodes(ret);
     }
   }
@@ -199,9 +260,21 @@ if (typeof(socket) == 'undefined') socket = {};
   }
 
   function addChatMsg(msg, offset) {
+    // TODO: check protocol
     if (socket.onchatmessage) {
-      var ret = {};
-      // TODO: parse msg and store result in ret
+      var ret = {},
+        lenname = msg.getUint8(offset),
+        lencolor = msg.getUint8(offset + 1),
+        lenstr = msg.getUint8(offset + 2),
+        text = '';
+      offset += 3;
+      for (var i = 0; i < lenname + lencolor + lenstr; i++) {
+        text += String.fromCharCode(msg.getUint16(offset, true));
+        offset += 2;
+      }
+      ret.name = text.slice(0, lenname);
+      ret.color = text.slice(lenname, lenname + lencolor);
+      ret.message = text.slice(lenname + lencolor, text.length);
       socket.onchatmessage(ret);
     }
   }
@@ -238,4 +311,23 @@ if (typeof(socket) == 'undefined') socket = {};
       ws.send(buffer);
     }
   };
+
+  socket.sendChatMessage = function (color, message, nick) {
+    if (socketOpen()) {
+      // TODO: check protocol
+      var msgstr = nick + color + message,
+        buffer = new ArrayBuffer(4 + 2 * msgstr.length),
+        view = new DataView(buffer),
+        offset = 4;
+      view.setUint8(0, 99);
+      view.setUint8(1, nick.length);
+      view.setUint8(2, color.length);
+      view.setUint8(3, message.length);
+      for (var i = 0; i < msgstr.length; i++) {
+        view.setUint16(offset, msgstr.charCodeAt(i), true);
+        offset += 2;
+      }
+      ws.send(buffer);
+    }
+  }
 }(socket));
