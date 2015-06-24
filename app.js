@@ -78,7 +78,7 @@ var fstream;
                 res.redirect('/?uploaderr=toobig');
               });
             } else {
-              res.redirect('/?name=' + filename.substr(0, filename.length - 4));
+              res.redirect('/?nick=' + filename.substr(0, filename.length - 4));
             }
           });
         } else {
