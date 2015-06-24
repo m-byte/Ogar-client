@@ -1,11 +1,11 @@
 if (typeof(servers) == 'undefined') servers = {};
 (function (servers) {
-  function getServer(callback, region, mode) {
+  servers.getServer = function(callback, region, mode) {
     if (config.masterServer) {
       var url = config.server;
-      if (!this.secure && url.slice(0, 'http://'.length) != 'http://') {
+      if (!config.secure && url.slice(0, 'http://'.length) != 'http://') {
         url = 'https://' + url;
-      } else if (this.secure && url.slice(0, 'https://'.length) != 'https://') {
+      } else if (config.secure && url.slice(0, 'https://'.length) != 'https://') {
         url = 'https://' + url;
       }
       var request = new XMLHttpRequest();
@@ -17,7 +17,7 @@ if (typeof(servers) == 'undefined') servers = {};
           } else {
             tools.logging.err('Could not connect to ' + url);
             setTimeout(function () {
-              getServer(callback, region, mode);
+              servers.getServer(callback, region, mode);
             }, 1000);
           }
         }
@@ -34,12 +34,12 @@ if (typeof(servers) == 'undefined') servers = {};
     }
   }
 
-  function getRegions(callback) {
+  servers.getRegions = function(callback) {
     if (config.masterServer) {
       var url = config.server;
-      if (!this.secure && url.slice(0, 'http://'.length) != 'http://') {
+      if (!config.secure && url.slice(0, 'http://'.length) != 'http://') {
         url = 'https://' + url;
-      } else if (this.secure && url.slice(0, 'https://'.length) != 'https://') {
+      } else if (config.secure && url.slice(0, 'https://'.length) != 'https://') {
         url = 'https://' + url;
       }
       url += '/info';

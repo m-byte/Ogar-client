@@ -3,7 +3,6 @@ if (typeof(socket) == 'undefined') socket = {};
   var ws = null,
     protocol = 1;
 
-  socket.secure = false;
   socket.onopen = null;
   socket.onconnecting = null;
   socket.onupdatenodes = null;
@@ -26,9 +25,9 @@ if (typeof(socket) == 'undefined') socket = {};
       }
       this.ws = null;
     }
-    if (!this.secure && url.slice(0, 'ws://'.length) != 'ws://') {
+    if (!config.secure && url.slice(0, 'ws://'.length) != 'ws://') {
       url = 'ws://' + url;
-    } else if (this.secure && url.slice(0, 'wss://'.length) != 'wss://') {
+    } else if (config.secure && url.slice(0, 'wss://'.length) != 'wss://') {
       url = 'wss://' + url;
     }
     if (this.onconnecting) {
