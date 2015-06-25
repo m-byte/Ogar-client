@@ -4,6 +4,7 @@ if (typeof(socket) == 'undefined') socket = {};
     protocol = 1;
 
   socket.onopen = null;
+  socket.onclose = null;
   socket.onconnecting = null;
   socket.onupdatenodes = null;
   socket.onupdateposition = null;
