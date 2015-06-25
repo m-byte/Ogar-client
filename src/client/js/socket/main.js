@@ -312,20 +312,18 @@ if (typeof(socket) == 'undefined') socket = {};
     }
   };
 
-  socket.sendChatMessage = function (color, message, nick) {
+  socket.sendChatMessage = function (message, flags) {
     if (socketOpen()) {
-      // TODO: check protocol
-      var msgstr = nick + color + message,
-        buffer = new ArrayBuffer(4 + 2 * msgstr.length),
+      var buffer = new ArrayBuffer(2 + 2 * message.length),
         view = new DataView(buffer),
-        offset = 4;
-      view.setUint8(0, 99);
-      view.setUint8(1, nick.length);
-      view.setUint8(2, color.length);
-      view.setUint8(3, message.length);
-      for (var i = 0; i < msgstr.length; i++) {
-        view.setUint16(offset, msgstr.charCodeAt(i), true);
-        offset += 2;
+        offset = 0;
+      view.setUint8(offset++, 99);
+      if (!flags) {
+        flags = 0;
+      }
+      view.setUint8(offset++, flags & 241); // make sure bits 2, 4, 8 don't get set
+      for (var i = 0; i < message.length; i++) {
+        view.setUint16(1 + 2 * i, message.charCodeAt(i), false);
       }
       ws.send(buffer);
     }
