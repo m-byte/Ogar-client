@@ -152,11 +152,10 @@ if (typeof(socket) == 'undefined') socket = {};
         tmp.size = msg.getUint16(offset + 4, true);
         offset += 6;
         tmp.color = {};
-        tmp.color.request = msg.getUint8(offset);
-        tmp.color.g = msg.getUint8(offset + 1);
-        tmp.color.b = msg.getUint8(offset + 2);
-        tmp.flags = msg.getUint8(offset + 3);
-        offset += 4;
+        tmp.color.r = msg.getUint8(offset++);
+        tmp.color.g = msg.getUint8(offset++);
+        tmp.color.b = msg.getUint8(offset++);
+        tmp.flags = msg.getUint8(offset++);
         if (tmp.flags & 2) {
           offset += 4;
         }
@@ -260,21 +259,35 @@ if (typeof(socket) == 'undefined') socket = {};
   }
 
   function addChatMsg(msg, offset) {
-    // TODO: check protocol
+    function getString() {
+      var text = '',
+        char;
+      while ((char = msg.getUint16(offset, true)) != 0) {
+        offset += 2;
+        text += String.fromCharCode(char);
+      }
+      offset += 2;
+      return text;
+    }
+
     if (socket.onchatmessage) {
       var ret = {},
-        lenname = msg.getUint8(offset),
-        lencolor = msg.getUint8(offset + 1),
-        lenstr = msg.getUint8(offset + 2),
-        text = '';
-      offset += 3;
-      for (var i = 0; i < lenname + lencolor + lenstr; i++) {
-        text += String.fromCharCode(msg.getUint16(offset, true));
-        offset += 2;
+        flags = msg.getUint8(offset++);
+      if (ret.flags & 2) {
+        offset += 4;
       }
-      ret.name = text.slice(0, lenname);
-      ret.color = text.slice(lenname, lenname + lencolor);
-      ret.message = text.slice(lenname + lencolor, text.length);
+      if (ret.flags & 4) {
+        offset += 8;
+      }
+      if (ret.flags & 8) {
+        offset += 16;
+      }
+      ret.color = {};
+      ret.color.r = msg.getUint8(offset++);
+      ret.color.g = msg.getUint8(offset++);
+      ret.color.b = msg.getUint8(offset++);
+      ret.name = getString();
+      ret.message = getString();
       socket.onchatmessage(ret);
     }
   }
@@ -300,13 +313,13 @@ if (typeof(socket) == 'undefined') socket = {};
     }
   };
 
-  socket.sendNick = function (nick) {
-    if (socketOpen() && nick != null) {
-      var buffer = new ArrayBuffer(1 + 2 * nick.length),
+  socket.sendName = function (name) {
+    if (socketOpen() && name != null) {
+      var buffer = new ArrayBuffer(1 + 2 * name.length),
         view = new DataView(buffer);
       view.setUint8(0, 0);
-      for (var i = 0; i < nick.length; i++) {
-        view.setUint16(1 + 2 * i, nick.charCodeAt(i), false);
+      for (var i = 0; i < name.length; i++) {
+        view.setUint16(1 + 2 * i, name.charCodeAt(i), false);
       }
       ws.send(buffer);
     }
