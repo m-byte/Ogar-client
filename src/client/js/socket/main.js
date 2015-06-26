@@ -15,6 +15,15 @@ if (typeof(socket) == 'undefined') socket = {};
   socket.onsetborder = null;
   socket.onchatmessage = null;
 
+  socket.event = {
+    // events that can be used with socket.sendEvent
+    spectate: 1,
+    pressSpace: 17,
+    pressQ: 18,
+    releaseQ: 19,
+    pressW: 21
+  };
+
   socket.connect = function (url) {
     if (ws) {
       ws.onopen = null;
