@@ -55,7 +55,7 @@ if (typeof(socket) == 'undefined') socket = {};
   };
 
   socket.isOpen = function () {
-    return socket.ws != null && socket.ws.readyState == WebSocket.OPEN;
+    return ws != null && ws.readyState == WebSocket.OPEN;
   };
 
   function openHandler() {
