@@ -4,7 +4,7 @@ if (typeof(servers) == 'undefined') servers = {};
     if (config.masterServer) {
       var url = config.server;
       if (!config.secure && url.slice(0, 'http://'.length) != 'http://') {
-        url = 'https://' + url;
+        url = 'http://' + url;
       } else if (config.secure && url.slice(0, 'https://'.length) != 'https://') {
         url = 'https://' + url;
       }
@@ -38,7 +38,7 @@ if (typeof(servers) == 'undefined') servers = {};
     if (config.masterServer) {
       var url = config.server;
       if (!config.secure && url.slice(0, 'http://'.length) != 'http://') {
-        url = 'https://' + url;
+        url = 'http://' + url;
       } else if (config.secure && url.slice(0, 'https://'.length) != 'https://') {
         url = 'https://' + url;
       }
