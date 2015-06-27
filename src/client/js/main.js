@@ -1,6 +1,7 @@
 // import('tools/main.js')
 
 // import('config.js')
+// import('entity/main.js')
 // import('socket/main.js')
 // import('servers/main.js')
 // import('game/main.js')
@@ -39,6 +40,11 @@ window.onload = function () {
 
   // clear the path
   history.pushState(null, null, window.location.pathname);
+
+  document.getElementById('region').onchange = function(event){
+    console.log(event.srcElement.value);
+    game.setRegion(event.srcElement.value);
+  };
 
   // prepare everything for the game
   game.init();
