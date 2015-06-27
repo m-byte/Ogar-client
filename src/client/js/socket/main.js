@@ -77,15 +77,15 @@ if (typeof(socket) == 'undefined') socket = {};
   function messageHandler(msg) {
     var view = new DataView(msg.data);
     var offset = 0;
-    if (msg.getUint8(offset) == 240) {
+    if (view.getUint8(offset) == 240) {
       offset += 5;
     }
-    switch (msg.getUint8(offset++)) {
+    switch (view.getUint8(offset++)) {
       case 16: // update nodes
-        updateNodes(msg, offset);
+        updateNodes(view, offset);
         break;
       case 17: // update position
-        updatePosition(msg, offset);
+        updatePosition(view, offset);
         break;
       case 20: // clear nodes
         if (socket.onclearnodes) {
@@ -93,25 +93,25 @@ if (typeof(socket) == 'undefined') socket = {};
         }
         break;
       case 21: // draw line
-        drawLine(msg, offset);
+        drawLine(view, offset);
         break;
       case 32: // add node
-        addNode(msg, offset);
+        addNode(view, offset);
         break;
       case 48: // update leaderboard (custom text)
-        updateLB(msg, offset, 48);
+        updateLB(view, offset, 48);
         break;
       case 49: // update leaderboard (ffa)
-        updateLB(msg, offset, 49);
+        updateLB(view, offset, 49);
         break;
       case 50: // update leaderboard (teams)
-        updateLB(msg, offset, 50);
+        updateLB(view, offset, 50);
         break;
       case 64: // set border
-        setBorder(msg, offset);
+        setBorder(view, offset);
         break;
       case 99: // add chat message
-        addChatMsg(msg, offset);
+        addChatMsg(view, offset);
         break;
     }
   }
@@ -123,11 +123,11 @@ if (typeof(socket) == 'undefined') socket = {};
     }
   }
 
-  function updateNodes(msg, offset) {
+  function updateNodes(view, offset) {
     function getString() {
       var text = '',
         char;
-      while ((char = msg.getUint16(offset, true)) != 0) {
+      while ((char = view.getUint16(offset, true)) != 0) {
         offset += 2;
         text += String.fromCharCode(char);
       }
@@ -140,32 +140,32 @@ if (typeof(socket) == 'undefined') socket = {};
         queueLength = 0,
         nodeid;
       ret.timestamp = +new Date;
-      queueLength = msg.getUint16(offset, true);
+      queueLength = view.getUint16(offset, true);
       offset += 2;
       ret.kills = [];
       for (var i = 0; i < queueLength; i++) {
         var tmp = {};
-        tmp.killer = msg.getUint32(offset, true);
-        tmp.nodeId = msg.getUint32(offset + 4, true);
+        tmp.killer = view.getUint32(offset, true);
+        tmp.nodeId = view.getUint32(offset + 4, true);
         ret.kills.push(tmp);
         offset += 8;
       }
       ret.updates = [];
-      while ((nodeid = msg.getUint32(offset, true)) != 0) {
+      while ((nodeid = view.getUint32(offset, true)) != 0) {
         offset += 4;
         var tmp = {},
           char;
         tmp.nodeId = nodeid;
         tmp.position = {};
-        tmp.position.x = msg.getUint16(offset, true);
-        tmp.position.y = msg.getUint16(offset + 2, true);
-        tmp.size = msg.getUint16(offset + 4, true);
+        tmp.position.x = view.getUint16(offset, true);
+        tmp.position.y = view.getUint16(offset + 2, true);
+        tmp.size = view.getUint16(offset + 4, true);
         offset += 6;
         tmp.color = {};
-        tmp.color.r = msg.getUint8(offset++);
-        tmp.color.g = msg.getUint8(offset++);
-        tmp.color.b = msg.getUint8(offset++);
-        tmp.flags = msg.getUint8(offset++);
+        tmp.color.r = view.getUint8(offset++);
+        tmp.color.g = view.getUint8(offset++);
+        tmp.color.b = view.getUint8(offset++);
+        tmp.flags = view.getUint8(offset++);
         if (tmp.flags & 2) {
           offset += 4;
         }
@@ -180,49 +180,49 @@ if (typeof(socket) == 'undefined') socket = {};
         tmp.name = getString();
         ret.updates.push(tmp);
       }
-      queueLength = msg.getUint32(offset + 4, true);
+      queueLength = view.getUint32(offset + 4, true);
       offset += 8;
       ret.remove = [];
       for (var i = 0; i < queueLength; i++) {
-        ret.remove.push(msg.getUint32(offset, true));
+        ret.remove.push(view.getUint32(offset, true));
         offset += 4;
       }
       socket.onupdatenodes(ret);
     }
   }
 
-  function updatePosition(msg, offset) {
+  function updatePosition(view, offset) {
     if (socket.onupdateposition) {
       var ret = {};
-      ret.x = msg.getFloat32(offset, true);
-      ret.y = msg.getFloat32(offset + 4, true);
-      ret.size = msg.getFloat32(offset + 8, true);
+      ret.x = view.getFloat32(offset, true);
+      ret.y = view.getFloat32(offset + 4, true);
+      ret.size = view.getFloat32(offset + 8, true);
       socket.onupdateposition(ret);
     }
   }
 
-  function drawLine(msg, offset) {
+  function drawLine(view, offset) {
     if (socket.ondrawline) {
       var ret = {};
-      ret.x = msg.getInt16(offset, true);
-      ret.y = msg.getInt16(offset + 2, true);
+      ret.x = view.getInt16(offset, true);
+      ret.y = view.getInt16(offset + 2, true);
       socket.ondrawline(ret);
     }
   }
 
-  function addNode(msg, offset) {
+  function addNode(view, offset) {
     if (socket.onaddnode) {
       var ret = {};
-      ret.id = msg.getUint32(offset, true);
+      ret.id = view.getUint32(offset, true);
       socket.onaddnode(ret);
     }
   }
 
-  function updateLB(msg, offset, type) {
+  function updateLB(view, offset, type) {
     function getString() {
       var text = '',
         char;
-      while ((char = msg.getUint16(offset, true)) != 0) {
+      while ((char = view.getUint16(offset, true)) != 0) {
         offset += 2;
         text += String.fromCharCode(char);
       }
@@ -233,12 +233,12 @@ if (typeof(socket) == 'undefined') socket = {};
     if (socket.onupdateleaderboard) {
       var ret = {};
       ret.lb = [];
-      ret.count = msg.getUint32(offset, true);
+      ret.count = view.getUint32(offset, true);
       offset += 4;
       if (type == 50) {
         ret.type = 'teams';
         for (var i = 0; i < ret.count; i++) {
-          ret.lb.push(msg.getFloat32(offset, true));
+          ret.lb.push(view.getFloat32(offset, true));
           offset += 4;
         }
       } else {
@@ -248,7 +248,7 @@ if (typeof(socket) == 'undefined') socket = {};
           ret.type = 'ffa';
         }
         for (var i = 0; i < ret.count; i++) {
-          var nodeId = msg.getUint32(offset, true);
+          var nodeId = view.getUint32(offset, true);
           offset += 4;
           ret.lb.push({id: nodeId, name: getString()});
         }
@@ -257,22 +257,22 @@ if (typeof(socket) == 'undefined') socket = {};
     }
   }
 
-  function setBorder(msg, offset) {
+  function setBorder(view, offset) {
     if (socket.onsetborder) {
       var ret = {};
-      ret.left = msg.getFloat64(offset, true);
-      ret.top = msg.getFloat64(offset + 8, true);
-      ret.right = msg.getFloat64(offset + 16, true);
-      ret.bottom = msg.getFloat64(offset + 24, true);
+      ret.left = view.getFloat64(offset, true);
+      ret.top = view.getFloat64(offset + 8, true);
+      ret.right = view.getFloat64(offset + 16, true);
+      ret.bottom = view.getFloat64(offset + 24, true);
       socket.onsetborder(ret);
     }
   }
 
-  function addChatMsg(msg, offset) {
+  function addChatMsg(view, offset) {
     function getString() {
       var text = '',
         char;
-      while ((char = msg.getUint16(offset, true)) != 0) {
+      while ((char = view.getUint16(offset, true)) != 0) {
         offset += 2;
         text += String.fromCharCode(char);
       }
@@ -282,7 +282,7 @@ if (typeof(socket) == 'undefined') socket = {};
 
     if (socket.onchatmessage) {
       var ret = {},
-        flags = msg.getUint8(offset++);
+        flags = view.getUint8(offset++);
       if (ret.flags & 2) {
         offset += 4;
       }
@@ -293,9 +293,9 @@ if (typeof(socket) == 'undefined') socket = {};
         offset += 16;
       }
       ret.color = {};
-      ret.color.r = msg.getUint8(offset++);
-      ret.color.g = msg.getUint8(offset++);
-      ret.color.b = msg.getUint8(offset++);
+      ret.color.r = view.getUint8(offset++);
+      ret.color.g = view.getUint8(offset++);
+      ret.color.b = view.getUint8(offset++);
       ret.name = getString();
       ret.message = getString();
       socket.onchatmessage(ret);
