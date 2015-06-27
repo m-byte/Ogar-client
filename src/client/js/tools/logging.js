@@ -1,7 +1,6 @@
 if (typeof(tools) == 'undefined') tools = {};
 if (typeof(tools.logging) == 'undefined') tools.logging = {};
 (function (logging) {
-  logging = {};
   logging.log = function (val) {
     if (config.logging) {
       console.log(val);
