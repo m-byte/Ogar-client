@@ -75,7 +75,7 @@ if (typeof(socket) == 'undefined') socket = {};
   }
 
   function messageHandler(msg) {
-    var view = new DataView(msg);
+    var view = new DataView(msg.data);
     var offset = 0;
     if (msg.getUint8(offset) == 240) {
       offset += 5;
