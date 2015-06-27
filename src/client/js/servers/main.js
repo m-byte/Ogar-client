@@ -32,7 +32,7 @@ if (typeof(servers) == 'undefined') servers = {};
     } else {
       callback([config.server, '']);
     }
-  }
+  };
 
   servers.getRegions = function(callback) {
     if (config.masterServer) {
@@ -58,5 +58,5 @@ if (typeof(servers) == 'undefined') servers = {};
       request.send();
     }
     callback(null);
-  }
+  };
 }(servers));
