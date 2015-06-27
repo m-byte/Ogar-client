@@ -20,7 +20,7 @@ if (typeof(tools.dialogs) == 'undefined') tools.dialogs = {};
   dialogs.showDialogs = function (show) {
     var dialogs = document.getElementById('overlays'),
       index = dialogs.className.indexOf('hidden');
-    if ((show && index == -1) || (!show && index > -1)) {
+    if ((!show && index == -1) || (show && index > -1)) {
       dialogs.className = dialogs.className.replace('hidden', '').replace('  ', ' ');
       if (!show) {
         dialogs.className = dialogs.className + ' hidden';
@@ -31,7 +31,7 @@ if (typeof(tools.dialogs) == 'undefined') tools.dialogs = {};
   dialogs.showConnecting = function (show) {
     var connecting = document.getElementById('connecting'),
       index = connecting.className.indexOf('hidden');
-    if ((show && index == -1) || (!show && index > -1)) {
+    if ((!show && index == -1) || (show && index > -1)) {
       connecting.className = connecting.className.replace('hidden', '').replace('  ', ' ');
       if (!show) {
         connecting.className = connecting.className + ' hidden';
