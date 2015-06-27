@@ -1,7 +1,7 @@
 var config = {
-  server: "m.agar.io",
+  server: "162.243.157.40:443",
   secure: false,
-  masterServer: true,
+  masterServer: false,
   skins: "./skins/",
   logging: true
 };
