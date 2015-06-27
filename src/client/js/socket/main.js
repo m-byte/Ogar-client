@@ -53,9 +53,10 @@ if (typeof(socket) == 'undefined') socket = {};
       tools.logging.err('Socket error');
     }
   };
-  function socketOpen() {
+
+  socket.isOpen = function () {
     return socket.ws != null && socket.ws.readyState == WebSocket.OPEN;
-  }
+  };
 
   function openHandler() {
     var buffer = new ArrayBuffer(5),
@@ -302,7 +303,7 @@ if (typeof(socket) == 'undefined') socket = {};
   }
 
   socket.sendEvent = function (value) {
-    if (socketOpen()) {
+    if (this.isOpen()) {
       var buffer = new ArrayBuffer(1),
         view = new DataView(buffer);
       view.setUint8(0, value);
@@ -311,7 +312,7 @@ if (typeof(socket) == 'undefined') socket = {};
   };
 
   socket.sendMouse = function (x, y) {
-    if (socketOpen()) {
+    if (this.isOpen()) {
       var buffer = new ArrayBuffer(21),
         view = new DataView(buffer);
       view.setUint8(0, 16);
@@ -323,7 +324,7 @@ if (typeof(socket) == 'undefined') socket = {};
   };
 
   socket.sendName = function (name) {
-    if (socketOpen() && name != null) {
+    if (this.isOpen() && name != null) {
       var buffer = new ArrayBuffer(1 + 2 * name.length),
         view = new DataView(buffer);
       view.setUint8(0, 0);
@@ -335,7 +336,7 @@ if (typeof(socket) == 'undefined') socket = {};
   };
 
   socket.sendChatMessage = function (message, flags) {
-    if (socketOpen()) {
+    if (this.isOpen()) {
       var buffer = new ArrayBuffer(2 + 2 * message.length),
         view = new DataView(buffer),
         offset = 0;

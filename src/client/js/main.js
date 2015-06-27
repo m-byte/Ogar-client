@@ -3,6 +3,7 @@
 // import('config.js')
 // import('socket/main.js')
 // import('servers/main.js')
+// import('game/main.js')
 
 window.onload = function () {
   function decodeQuery(query) {
@@ -19,8 +20,8 @@ window.onload = function () {
   // check for arguments
   if (window.location.search) {
     var query = decodeQuery(window.location.search);
-    if(query.hasOwnProperty('uploaderr')){
-      switch(query['uploaderr']){
+    if (query.hasOwnProperty('uploaderr')) {
+      switch (query['uploaderr']) {
         case 'toobig':
           // TODO: display error message
           break;
@@ -31,11 +32,14 @@ window.onload = function () {
           // TODO: display error message
           break;
       }
-    }else if(query.hasOwnProperty('nick')){
+    } else if (query.hasOwnProperty('nick')) {
       document.getElementById('nick').value = query['nick'];
     }
   }
 
   // clear the path
   history.pushState(null, null, window.location.pathname);
+
+  // prepare everything for the game
+  game.init();
 };

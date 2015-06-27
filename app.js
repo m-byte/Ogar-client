@@ -62,7 +62,7 @@ app.get('/upload', function (req, res, next) {
 });
 
 app.post('/upload', function (req, res, next) {
-var fstream;
+  var fstream;
   req.pipe(req.busboy);
   req.busboy.on('file', function (fieldname, file, filename) {
     if (fieldname == 'avatar' && filename.lastIndexOf('.png') == filename.length - 4) {

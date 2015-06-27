@@ -16,4 +16,26 @@ if (typeof(tools.dialogs) == 'undefined') tools.dialogs = {};
       current = dialog;
     }
   };
+
+  dialogs.showDialogs = function (show) {
+    var dialogs = document.querySelectorAll('#overlays'),
+      index = dialogs.className.indexOf('hidden');
+    if ((show && index == -1) || (!show && index > -1)) {
+      dialogs.className = dialogs.className.replace('hidden', '').replace('  ', ' ');
+      if (show) {
+        dialogs.className = dialogs.className + ' hidden';
+      }
+    }
+  };
+
+  dialogs.showConnecting = function (show) {
+    var connecting = document.querySelectorAll('#connecting'),
+      index = connecting.className.indexOf('hidden');
+    if ((show && index == -1) || (!show && index > -1)) {
+      connecting.className = connecting.className.replace('hidden', '').replace('  ', ' ');
+      if (show) {
+        connecting.className = connecting.className + ' hidden';
+      }
+    }
+  };
 }(tools.dialogs));
