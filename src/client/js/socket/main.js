@@ -30,10 +30,10 @@ if (typeof(socket) == 'undefined') socket = {};
       ws.onmessage = null;
       ws.onclose = null;
       try {
-        this.ws.close()
+        ws.close()
       } catch (e) {
       }
-      this.ws = null;
+      ws = null;
     }
     if (!config.secure && url.slice(0, 'ws://'.length) != 'ws://') {
       url = 'ws://' + url;
@@ -44,12 +44,12 @@ if (typeof(socket) == 'undefined') socket = {};
       this.onconnecting();
     }
     tools.logging.log('Connecting to ' + url);
-    this.ws = new WebSocket(url);
-    this.ws.binaryType = 'arraybuffer';
-    this.ws.onopen = openHandler;
-    this.ws.onmessage = messageHandler;
-    this.ws.onclose = closeHandler;
-    this.ws.onerror = function () {
+    ws = new WebSocket(url);
+    ws.binaryType = 'arraybuffer';
+    ws.onopen = openHandler;
+    ws.onmessage = messageHandler;
+    ws.onclose = closeHandler;
+    ws.onerror = function () {
       tools.logging.err('Socket error');
     }
   };
