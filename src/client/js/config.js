@@ -3,5 +3,8 @@ var config = {
   secure: false,
   masterServer: false,
   skins: "./skins/",
-  logging: true
+  logging: true,
+  colorLine: '#faa',
+  colorGrid: '#000',
+  colorBack: '#f1f1f1',
 };
