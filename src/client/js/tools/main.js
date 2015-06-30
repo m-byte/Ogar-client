@@ -1,5 +1,3 @@
-// import('dialogs.js')
-// import('logging.js')
-if (typeof(tools) == 'undefined') var tools = {};
-(function (ns) {
-}(tools));
+module.exports = {};
+module.exports.logging = require('./logging');
+module.exports.dialogs = require('./dialogs');

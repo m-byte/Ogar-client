@@ -1,4 +1,10 @@
-if (typeof(game) == 'undefined') game = {};
+var socket = require('../socket/main');
+var tools = require('../tools/main');
+var entity = require('../entity/main');
+var servers = require('../servers/main');
+var config = require('../config');
+
+module.exports = {};
 (function (game) {
   // TODO: sort and simplify variables
   var c2d,
@@ -271,7 +277,72 @@ if (typeof(game) == 'undefined') game = {};
   }
 
   game.draw = function () {
-    // TODO
+    this.lastUpdate = +Date.now();
+    //buildQTree
+    //mouseCoordinateChange
+    c2d.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    drawGrid();
+    nodelist.sort(function (a, b) {
+      if (a.size == b.size) {
+        return a.id - b.id;
+      }
+      return a.size - b.size;
+    });
+    c2d.save();
+    c2d.translate(this.canvas.width / 2, this.canvas.height / 2);
+    c2d.scale(this.view.zoom, this.view.zoom);
+    c2d.translate(-this.view.x, -this.view.y);
+    /*for (var i = 0; i < game.destroyedCells.length; i++) {
+     game.destroyedCells[i].draw(c2d);
+     }
+     for (var i = 0; i < nodelist.length; i++) {
+     nodes[i].draw(c2d);
+     }*/
+    if (line.draw) {
+      line.origin.x = (3 * line.origin.x + line.x) / 4;
+      line.origin.y = (3 * line.origin.y + line.y) / 4;
+      c2d.save();
+      c2d.strokeStyle = config.colorLine;
+      c2d.lineWidth = 10;
+      c2d.lineCap = 'round';
+      c2d.lineJoin = 'round';
+      c2d.globalAlpha = .5;
+      c2d.beginPath();
+      for (var i = 0; i < playerCells.length; i++) {
+        c2d.moveTo(draw.origin.x, draw.origin.y);
+        c2d.lineTo(playerCells[i].x, playerCells[i].y);
+      }
+      c2d.stroke();
+      c2d.restore();
+    }
+    c2d.restore();
+    // TODO: draw chat, leaderboard, score?
+    var timediff = Date.now() - this.lastUpdate;
+  };
+
+  function drawGrid() {
+    c2d.fillStyle = config.colorBack;
+    c2d.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    c2d.save();
+    c2d.strokeStyle = config.colorGrid;
+    c2d.globalAlpha = .2;
+    c2d.scale(game.view.zoom, game.view.zoom);
+    var width = game.canvas.width / game.view.zoom,
+      height = game.canvas.height / game.view.zoom;
+    c2d.lineWidth = config.gridLine;
+    for (var i = (width - game.position.x / 2) % config.gridSpacing - .5; i < width; i += config.gridSpacing) {
+      c2d.beginPath();
+      c2d.moveTo(i, 0);
+      c2d.lineTo(i, height);
+      c2d.stroke();
+    }
+    for (var i = (height - game.position.y / 2) % config.gridSpacing - .5; i < height; i += config.gridSpacing) {
+      c2d.beginPath();
+      c2d.moveTo(0, i);
+      c2d.lineTo(width, i);
+      c2d.stroke();
+    }
+    c2d.restore();
   };
 
   function mouseDown(event) {
@@ -369,7 +440,6 @@ if (typeof(game) == 'undefined') game = {};
   function sendMouse() {
     if (playing && hasMouseMoved()) {
       socket.sendMouse(mouse.x, mouse.y);
-      console.log(x, y);
     }
   }
 
@@ -404,4 +474,4 @@ if (typeof(game) == 'undefined') game = {};
       });
     }
   }
-}(game));
+}(module.exports));

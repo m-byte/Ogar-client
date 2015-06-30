@@ -17,6 +17,9 @@
     "merge-js": "^1.1.0",
     "connect-busboy": "^0.0.2"
   },
+  "devDependencies": {
+    "browserify": "^10.2.4"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/m-byte/Ogar-client.git"

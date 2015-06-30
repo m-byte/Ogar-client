@@ -1,4 +1,4 @@
-var config = {
+module.exports = {
   server: "162.243.157.40:443", // ip or domain and port of server
   secure: false,                // true if using TLS
   masterServer: false,          // server type: false => game server, true => master server
@@ -9,4 +9,6 @@ var config = {
   colorBack: '#f1f1f1',         // background color
   gridSpacing: 50,              // spacing of grid lines
   gridLine: 1,                  // thickness of a grid line
+  leaderboard: true,            // whether to display the leaderboard
+  chat: true,                   // whether to display chat features
 };

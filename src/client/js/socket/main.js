@@ -1,4 +1,7 @@
-if (typeof(socket) == 'undefined') socket = {};
+var config = require('../config');
+var tools = require('../tools/main');
+
+module.exports = {};
 (function (socket) {
   var ws = null,
     protocol = 1;
@@ -351,4 +354,4 @@ if (typeof(socket) == 'undefined') socket = {};
       ws.send(buffer);
     }
   }
-}(socket));
+}(module.exports));

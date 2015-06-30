@@ -1,5 +1,4 @@
-if (typeof(tools) == 'undefined') tools = {};
-if (typeof(tools.dialogs) == 'undefined') tools.dialogs = {};
+module.exports = {};
 (function (dialogs) {
 
   var current = 'hello';
@@ -38,4 +37,4 @@ if (typeof(tools.dialogs) == 'undefined') tools.dialogs = {};
       }
     }
   };
-}(tools.dialogs));
+}(module.exports));

@@ -1,5 +1,6 @@
-if (typeof(tools) == 'undefined') tools = {};
-if (typeof(tools.logging) == 'undefined') tools.logging = {};
+var config = require('../config');
+
+module.exports = {};
 (function (logging) {
   logging.log = function (val) {
     if (config.logging) {
@@ -9,4 +10,4 @@ if (typeof(tools.logging) == 'undefined') tools.logging = {};
   logging.err = function (val) {
     console.error(val);
   };
-}(tools.logging));
+}(module.exports));

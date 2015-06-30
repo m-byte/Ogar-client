@@ -1,10 +1,9 @@
-// import('tools/main.js')
-
-// import('config.js')
-// import('entity/main.js')
-// import('socket/main.js')
-// import('servers/main.js')
-// import('game/main.js')
+var tools = require('./tools/main');
+var config = require('./config');
+var entity = require('./entity/main');
+var socket = require('./socket/main');
+var servers = require('./servers/main');
+var game = require('./game/main');
 
 window.onload = function () {
   function decodeQuery(query) {

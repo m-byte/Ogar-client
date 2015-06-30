@@ -1,4 +1,7 @@
-if (typeof(servers) == 'undefined') servers = {};
+var config = require('../config');
+var tools = require('../tools/main');
+
+module.exports = {};
 (function (servers) {
   servers.getServer = function(callback, region, mode) {
     if (config.masterServer) {
@@ -59,4 +62,4 @@ if (typeof(servers) == 'undefined') servers = {};
     }
     callback(null);
   };
-}(servers));
+}(module.exports));
