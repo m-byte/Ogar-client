@@ -3,6 +3,7 @@ var tools = require('../tools/main');
 var entity = require('../entity/main');
 var servers = require('../servers/main');
 var config = require('../config');
+var pixi = require('pixi.js');
 
 module.exports = {};
 (function (game) {
@@ -24,19 +25,55 @@ module.exports = {};
     score = 0,
     name = '',
     delay = 500,
-    line = {x: 0, y: 0, draw: false, origin: {x: 0, y: 0}};
+    line = {x: 0, y: 0, draw: false, origin: {x: 0, y: 0}},
+    container,
+    renderer;
 
   game.lastUpdate = 0;
   game.destroyedCells = [];
   game.view = {x: 0, y: 0, zoom: 1};
   game.canvas = undefined;
   game.position = {x: 5000, y: 5000, top: 0, left: 0, right: 10000, bottom: 10000, size: 1};
+  game.graphics = {};
+
+  function getBackgroundTexture(){
+    var ret = document.createElement('canvas'),
+      c2d = ret.getContext('2d');
+    ret.width = 40;
+    ret.height = 40;
+    c2d.fillStyle = config.colorBack;
+    c2d.fillRect(0,0,40,40);
+    c2d.strokeStyle = config.colorGrid;
+    c2d.globalAlpha = .2;
+    c2d.lineWidth = config.gridLine;
+    c2d.beginPath();
+    c2d.moveTo(config.gridLine/2, 0);
+    c2d.lineTo(config.gridLine/2, 40);
+    c2d.stroke();
+    c2d.beginPath();
+    c2d.moveTo(0, config.gridLine/2);
+    c2d.lineTo(40, config.gridLine/2);
+    c2d.stroke();
+    return pixi.Texture.fromCanvas(ret);
+  }
 
   game.init = function () {
+    container = new pixi.Container();
+    renderer = pixi.autoDetectRenderer(800, 600, {transparent: true});
+    document.body.appendChild(renderer.view);
+    document.body.style.backgroundColor = config.colorBack;
     this.updateServerList();
     setInterval(this.updateServerList, 18E4);
-    this.canvas = document.getElementById('canvas');
-    c2d = this.canvas.getContext('2d');
+    /*this.canvas = document.getElementById('canvas');
+    c2d = this.canvas.getContext('2d');*/
+    this.canvas = renderer.view;
+
+    window.game = game;
+    var bg = getBackgroundTexture();
+    game.graphics.grid = new pixi.extras.TilingSprite(bg, this.canvas.width + bg.width, this.canvas.height + bg.width);
+    container.addChild(game.graphics.grid);
+
+    //this.canvas.id = 'canvas';
     this.canvas.onmousedown = mouseDown;
     this.canvas.onmousemove = mouseMove;
     window.onkeydown = keyDown;
@@ -151,9 +188,9 @@ module.exports = {};
     }
 
     // add or update nodes
-    for (var i = 0; i < ret.updates.length; i++) {
+    for (var j = 0; j < ret.updates.length; j++) {
       var node = null,
-        item = ret.updates[i];
+        item = ret.updates[j];
       if (nodes.hasOwnProperty(item.nodeId)) {
         node = nodes[item.nodeId];
         node.updatePos();
@@ -190,10 +227,10 @@ module.exports = {};
     }
 
     // remove nodes
-    for (var i = 0; i < ret.remove.length; i++) {
-      node = nodes[ret.remove[i]];
+    for (var k = 0; k < ret.remove.length; k++) {
+      node = nodes[ret.remove[k]];
       if (node) {
-        node.destroy;
+        node.destroy();
       }
     }
   };
@@ -277,12 +314,13 @@ module.exports = {};
   }
 
   game.draw = function () {
+    renderer.render(container);
     this.lastUpdate = +Date.now();
     //buildQTree
     //mouseCoordinateChange
-    c2d.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    drawGrid();
-    nodelist.sort(function (a, b) {
+    //c2d.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    updateGrid();
+    /*nodelist.sort(function (a, b) {
       if (a.size == b.size) {
         return a.id - b.id;
       }
@@ -291,14 +329,14 @@ module.exports = {};
     c2d.save();
     c2d.translate(this.canvas.width / 2, this.canvas.height / 2);
     c2d.scale(this.view.zoom, this.view.zoom);
-    c2d.translate(-this.view.x, -this.view.y);
+    c2d.translate(-this.view.x, -this.view.y);*/
     /*for (var i = 0; i < game.destroyedCells.length; i++) {
      game.destroyedCells[i].draw(c2d);
      }
      for (var i = 0; i < nodelist.length; i++) {
      nodes[i].draw(c2d);
      }*/
-    if (line.draw) {
+    /*if (line.draw) {
       line.origin.x = (3 * line.origin.x + line.x) / 4;
       line.origin.y = (3 * line.origin.y + line.y) / 4;
       c2d.save();
@@ -315,34 +353,14 @@ module.exports = {};
       c2d.stroke();
       c2d.restore();
     }
-    c2d.restore();
+    c2d.restore();*/
     // TODO: draw chat, leaderboard, score?
     var timediff = Date.now() - this.lastUpdate;
   };
 
-  function drawGrid() {
-    c2d.fillStyle = config.colorBack;
-    c2d.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    c2d.save();
-    c2d.strokeStyle = config.colorGrid;
-    c2d.globalAlpha = .2;
-    c2d.scale(game.view.zoom, game.view.zoom);
-    var width = game.canvas.width / game.view.zoom,
-      height = game.canvas.height / game.view.zoom;
-    c2d.lineWidth = config.gridLine;
-    for (var i = (width - game.position.x / 2) % config.gridSpacing - .5; i < width; i += config.gridSpacing) {
-      c2d.beginPath();
-      c2d.moveTo(i, 0);
-      c2d.lineTo(i, height);
-      c2d.stroke();
-    }
-    for (var i = (height - game.position.y / 2) % config.gridSpacing - .5; i < height; i += config.gridSpacing) {
-      c2d.beginPath();
-      c2d.moveTo(0, i);
-      c2d.lineTo(width, i);
-      c2d.stroke();
-    }
-    c2d.restore();
+  function updateGrid() {
+    game.graphics.grid.x = (game.canvas.width / 2 - game.position.x) % game.graphics.grid.texture.width;
+    game.graphics.grid.y = (game.canvas.height / 2 - game.position.y) % game.graphics.grid.texture.height;
   };
 
   function mouseDown(event) {
@@ -410,8 +428,9 @@ module.exports = {};
   }
 
   function resize() {
-    game.canvas.width = window.innerWidth;
-    game.canvas.height = window.innerHeight;
+    game.graphics.grid.width = window.innerWidth + game.graphics.grid.texture.width;
+    game.graphics.grid.height = window.innerHeight + game.graphics.grid.texture.height;
+    renderer.resize(window.innerWidth, window.innerHeight);
     game.draw();
   }
 
@@ -431,10 +450,7 @@ module.exports = {};
     if (Math.abs(mouse.y - mouse.lastY) < 0.01) {
       return false;
     }
-    if (mouse.x * mouse.x + mouse.y * mouse.y <= 64) {
-      return false;
-    }
-    return true;
+    return mouse.x * mouse.x + mouse.y * mouse.y > 64;
   }
 
   function sendMouse() {
